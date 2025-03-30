@@ -23,5 +23,24 @@ class BreadthFirstSearch:
         
         # Add the node to the explored dictionary
         explored[node.state] = True
+
+        frontier = QueueFrontier()
+        frontier.add(node)
         
+        while True:
+            node = frontier.remove()
+            explored[node.state] = True
+
+            if node.state == grid.end:
+                return Solution(node, explored)
+
+            for action, new_state in grid.get_neighbours(node.state).items():
+                if new_state not in explored:
+                    neighbour = Node("",
+                                new_state,
+                                node.cost + grid.get_cost(new_state),
+                                node,
+                                action)
+                    frontier.add(neighbour)
+
         return NoSolution(explored)
