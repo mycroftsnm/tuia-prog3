@@ -23,5 +23,24 @@ class DepthFirstSearch:
         
         # Add the node to the explored dictionary
         explored[node.state] = True
-        
+
+        frontier = StackFrontier()
+        frontier.add(node)
+
+        while not frontier.is_empty():
+            node = frontier.remove()
+            if node.state == grid.end:
+                return Solution(node, explored)
+
+            for action, new_state in grid.get_neighbours(node.state).items():
+                if new_state in explored:
+                    continue
+                neighbour = Node("",
+                            new_state,
+                            node.cost + grid.get_cost(new_state),
+                            node,
+                            action)
+                frontier.add(neighbour)
+                explored[new_state] = True
+
         return NoSolution(explored)
