@@ -1,6 +1,6 @@
 from typing import Optional
 import pygame
-
+import json
 
 from .generate import GenerationCallback, MazeGenerator
 from .animations import AnimatingNode, Animation, AnimationCallback, Animator
@@ -80,6 +80,66 @@ class Maze:
 
         # ...
         self.speed = "Fast"
+
+
+    def save_maze(self, filename: str) -> None:
+        """Guarda el laberinto actual en un archivo JSON"""
+        data = {
+            "width": self.width,
+            "height": self.height,
+            "maze": [[node.value for node in row] for row in self.maze],
+            "start": self.start,
+            "goal": self.goal
+        }
+        with open(filename, 'w') as f:
+            json.dump(data, f, indent=2)
+
+    def load_maze(self, filename: str) -> None:
+        """Carga un laberinto desde un archivo JSON"""
+        with open(filename, 'r') as f:
+            data = json.load(f)
+        
+        self.clear_board()
+
+        self.width = data["width"]
+        self.height = data["height"]
+
+        self.maze = [
+            [MazeNode(value, (row_idx, col_idx), 1)
+             for col_idx, value in enumerate(row)]
+            for row_idx, row in enumerate(data["maze"])
+        ]
+
+        self.start = tuple(data["start"])
+        self.goal = tuple(data["goal"])
+
+        self.maze[self.start[0]][self.start[1]].value = "A"
+        self.maze[self.start[0]][self.start[1]].cost = 0
+        self.maze[self.goal[0]][self.goal[1]].value = "B"
+        self.maze[self.goal[0]][self.goal[1]].cost = 1
+
+        self.coords = self._generate_coordinates()
+
+        nodes = []
+        for rowIdx in range(self.height):
+            for colIdx in range(self.width):
+                cell = self.maze[rowIdx][colIdx]
+                if cell.value == "1":
+                    continue
+                x, y = self.coords[rowIdx][colIdx]
+                nodes.append(
+                    AnimatingNode(
+                        rect=pygame.Rect(0, 0, MIN_SIZE, MIN_SIZE),
+                        center=(x + CELL_SIZE // 2, y + CELL_SIZE // 2),
+                        ticks=0,
+                        value=cell.value,
+                        color= DARK,
+                    )
+                )
+
+        self.animator.add_nodes_to_animate(nodes, gap=0)       
+
+
 
     def _generate_coordinates(self) -> list[list[tuple[int, int]]]:
         """Generate screen coordinates for maze
