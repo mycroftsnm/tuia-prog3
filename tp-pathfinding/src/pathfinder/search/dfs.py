@@ -29,8 +29,6 @@ class DepthFirstSearch:
 
         while not frontier.is_empty():
             node = frontier.remove()
-            if node.state == grid.end:
-                return Solution(node, explored)
 
             for action, new_state in grid.get_neighbours(node.state).items():
                 if new_state in explored:
@@ -40,7 +38,9 @@ class DepthFirstSearch:
                             node.cost + grid.get_cost(new_state),
                             node,
                             action)
-                frontier.add(neighbour)
                 explored[new_state] = True
+                if new_state == grid.end:
+                    return Solution(neighbour, explored)
+                frontier.add(neighbour)
 
         return NoSolution(explored)
