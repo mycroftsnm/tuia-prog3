@@ -29,12 +29,11 @@ class BreadthFirstSearch:
         
         while not frontier.is_empty():
             node = frontier.remove()
-            if node.state == grid.end:
-                return Solution(node, explored)
-
             for action, new_state in grid.get_neighbours(node.state).items():
                 if new_state in explored:
                     continue
+                if new_state == grid.end:
+                    return Solution(node, explored)
                 neighbour = Node("",
                             new_state,
                             node.cost + grid.get_cost(new_state),
