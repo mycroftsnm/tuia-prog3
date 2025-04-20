@@ -32,14 +32,14 @@ class BreadthFirstSearch:
             for action, new_state in grid.get_neighbours(node.state).items():
                 if new_state in explored:
                     continue
-                if new_state == grid.end:
-                    return Solution(node, explored)
                 neighbour = Node("",
                             new_state,
                             node.cost + grid.get_cost(new_state),
                             node,
                             action)
-                frontier.add(neighbour)
                 explored[new_state] = True
+                if new_state == grid.end:
+                    return Solution(neighbour, explored)
+                frontier.add(neighbour)
 
         return NoSolution(explored)
