@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 import pygame
 
 from .state import State
@@ -343,6 +344,10 @@ def main() -> None:
     cell_under_mouse = (-1, -1)
     cell_value = ""
 
+    if Path('maze.json').exists():
+        print('Cargando laberinto desde maze.json')
+        maze.load_maze('maze.json')
+
     while True:
         # Handle events
         for event in pygame.event.get():
@@ -665,6 +670,8 @@ def draw() -> None:
                     surface=WINDOW,
                 )
                 state.label.rect.bottom = HEADER_HEIGHT - 10
+                maze.save_maze('maze.json')
+                print('Guardando laberinto en maze.json')
 
             maze.generate_maze(
                 algorithm=generate_menu.selected.text,
