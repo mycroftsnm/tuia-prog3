@@ -21,8 +21,6 @@ class DepthFirstSearch:
         # Initialize the explored dictionary to be empty
         explored = {} 
         
-        # Add the node to the explored dictionary
-        explored[node.state] = True
 
         frontier = StackFrontier()
         frontier.add(node)
