@@ -717,7 +717,8 @@ def run_single(idx: int) -> None:
         state.done_visualising = True
         state.label = Label(
             f"{text} took {solution.explored_length} steps in "
-            f"{solution.time:.2f}ms", "center", 0,
+            f"{solution.time:.2f}ms"
+            f"\n| Costo de camino {solution.path_cost}", "center", 0,
             background_color=pygame.Color(*WHITE),
             foreground_color=pygame.Color(*DARK),
             padding=6, font_size=20, outline=False,
@@ -727,6 +728,9 @@ def run_single(idx: int) -> None:
         state.overlay = False
 
     maze.visualize(solution=solution, after_animation=callback)
+    print(f"Algoritmo {text}\n\
+          Tardó: {solution.time:.2f}ms\
+          Costo total de camino: {solution.path_cost}")
 
     state.label = Label(
         f"Running {text}", "center", 0,
