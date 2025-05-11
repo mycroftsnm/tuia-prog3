@@ -39,7 +39,7 @@ class GreedyBestFirstSearch:
                             action)
                 explored[new_state] = neighbour.cost
                 if new_state == grid.end:
-                    return Solution(node, explored)
+                    return Solution(neighbour, explored)
                 frontier.add(neighbour, distancia_manhattan(new_state, grid.end))
 
 
