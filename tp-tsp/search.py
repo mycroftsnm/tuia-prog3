@@ -82,10 +82,81 @@ class HillClimbing(LocalSearch):
 class HillClimbingReset(LocalSearch):
     """Algoritmo de ascension de colinas con reinicio aleatorio."""
 
-    # COMPLETAR
+    REINICIOS = 5  # Cantidad de reinicios aleatorios
+    
+    def solve(self, problem: OptProblem):
+        """Resuelve un problema de optimizacion con ascension de colinas con reinicio aleatorio.
+
+        Argumentos:
+        ==========
+        problem: OptProblem
+            un problema de optimizacion
+        """
+        # Inicio del reloj
+        start = time()
+
+        for _ in range(self.REINICIOS):
+            actual = problem.random_reset()
+            value = problem.obj_val(actual)
+            self.value = value
+
+            while True:
+                act, succ_val = problem.max_action(actual)
+
+                if succ_val <= value: #Maximo local -> nos quedamos con el mayor valor y reiniciamos
+                    if value > self.value:
+                        self.tour = actual
+                        self.value = value
+                    break
+
+                actual = problem.result(actual, act)
+                value = succ_val
+                self.niters += 1
+
+        end = time()
+        self.time = end - start
+
 
 
 class Tabu(LocalSearch):
     """Algoritmo de busqueda tabu."""
 
-    # COMPLETAR
+    ITERACIONES = 20  # Cantidad de iteraciones sin mejoras permitidas // pasos laterales
+    TABU_SIZE = 15  # Cantidad máxima de acciones en la lista tabú
+
+
+    def solve(self, problem: OptProblem):
+        """Resuelve un problema de optimizacion con busqueda tabú.
+
+        Argumentos:
+        ==========
+        problem: OptProblem
+            un problema de optimizacion
+        """
+        # Inicio del reloj
+        start = time()
+        tabu = []
+        # Arrancamos del estado inicial
+        actual = problem.init
+        self.value = problem.obj_val(problem.init)
+        iteraciones = self.ITERACIONES
+       
+        while iteraciones > 0:
+            act, succ_val = problem.max_action(actual, tabu)
+            actual = problem.result(actual, act)
+            self.niters += 1
+            iteraciones -= 1
+
+            if succ_val > self.value:
+                iteraciones = self.ITERACIONES
+                self.value = succ_val
+                self.tour = actual
+
+            tabu.append(act)
+
+            while len(tabu) > self.TABU_SIZE:
+                tabu.pop(0)
+
+        end = time()
+        self.time = end - start
+        
