@@ -84,6 +84,7 @@ class Maze:
 
     def save_maze(self, filename: str) -> None:
         """Guarda el laberinto actual en un archivo JSON"""
+        self.clear_visited()
         data = {
             "width": self.width,
             "height": self.height,
@@ -93,11 +94,14 @@ class Maze:
         }
         with open(filename, 'w') as f:
             json.dump(data, f, indent=2)
+        print(f"Guardando laberinto en {filename}")
 
     def load_maze(self, filename: str) -> None:
         """Carga un laberinto desde un archivo JSON"""
         with open(filename, 'r') as f:
             data = json.load(f)
+        
+        print(f"Cargando laberinto desde {filename}")
         
         self.clear_board()
 
@@ -113,10 +117,8 @@ class Maze:
         self.start = tuple(data["start"])
         self.goal = tuple(data["goal"])
 
-        self.maze[self.start[0]][self.start[1]].value = "A"
-        self.maze[self.start[0]][self.start[1]].cost = 0
-        self.maze[self.goal[0]][self.goal[1]].value = "B"
-        self.maze[self.goal[0]][self.goal[1]].cost = 1
+        self.set_cell(self.start, "A", forced=True)
+        self.set_cell(self.goal, "B", forced=True)
 
         self.coords = self._generate_coordinates()
 
