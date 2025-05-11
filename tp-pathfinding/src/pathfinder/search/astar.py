@@ -2,7 +2,7 @@ from ..models.grid import Grid
 from ..models.frontier import PriorityQueueFrontier
 from ..models.solution import NoSolution, Solution
 from ..models.node import Node
-
+from .heuristicas import distancia_manhattan
 
 class AStarSearch:
     @staticmethod
@@ -19,9 +19,28 @@ class AStarSearch:
         node = Node("", grid.start, 0)
 
         # Initialize the explored dictionary to be empty
-        explored = {} 
+        explored = {}
         
         # Add the node to the explored dictionary
         explored[node.state] = True
+
+        frontier = PriorityQueueFrontier()
+        frontier.add(node, 0)
+
+        while not frontier.is_empty():
+            node = frontier.pop()
+            if node.state == grid.end:
+                return Solution(node, explored)
+
+            for action, new_state in grid.get_neighbours(node.state).items():
+                if new_state in explored and explored[new_state] <= node.cost + grid.get_cost(new_state):
+                    continue
+                neighbour = Node("",
+                                 new_state,
+                                 node.cost + grid.get_cost(new_state),
+                                 node,
+                                 action)
+                explored[new_state] = neighbour.cost
+                frontier.add(neighbour, neighbour.cost + distancia_manhattan(new_state, grid.end))
         
         return NoSolution(explored)
